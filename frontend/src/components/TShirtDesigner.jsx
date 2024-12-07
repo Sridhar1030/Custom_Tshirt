@@ -21,6 +21,8 @@ const TShirtDesigner = () => {
             });
         });
 
+
+
         Promise.all(newImages).then((images) => {
             setUploadedImages((prevImages) => [...prevImages, ...images]);
             setImagePositions((prevPositions) => [
@@ -45,13 +47,14 @@ const TShirtDesigner = () => {
                     console.error('Error: Image not generated');
                     return;
                 }
+                const USER_ID = localStorage.getItem('userID'); // Get userID from localStorage
 
                 const file = new File([blob], 'tshirt-design.png', { type: 'image/png' });
 
                 // Create FormData and append the image
                 const formData = new FormData();
                 formData.append('image', file);
-
+                formData.append('userId', USER_ID); 
                 // Debug: Check that FormData contains the file
                 console.log('FormData:', formData);
 

@@ -2,6 +2,8 @@ import express, { json } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import uploadRouter from "./routes/upload.routes.js"; // Import the router for image upload
+import userRouter from "./routes/user.routes.js";
+import { connectDB } from "./db/index.js"; // Import connectDB function
 
 dotenv.config(); // Load environment variables
 
@@ -9,8 +11,12 @@ const app = express();
 app.use(json());
 app.use(cors());
 
+// Connect to MongoDB
+connectDB();
+
 // Use the uploadRouter for the /api/upload route
 app.use("/api", uploadRouter);
+app.use("/api/v1/auth", userRouter);
 
 // Test route to check server status
 app.get("/test", (req, res) => {
