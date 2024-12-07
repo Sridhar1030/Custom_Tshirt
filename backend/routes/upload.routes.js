@@ -56,6 +56,7 @@ router.post("/upload", upload.single("image"), async (req, res) => {
         // Upload to S3 directly from memory
         const uploadResponse = await uploadToS3(buffer, fileName, mimetype);
 
+		
         // Respond with the uploaded file's URL
         res.status(200).send({
             message: "File uploaded successfully",
