@@ -21,8 +21,6 @@ const TShirtDesigner = () => {
             });
         });
 
-
-
         Promise.all(newImages).then((images) => {
             setUploadedImages((prevImages) => [...prevImages, ...images]);
             setImagePositions((prevPositions) => [
@@ -36,6 +34,17 @@ const TShirtDesigner = () => {
     const handlePositionChange = (index, newPosition) => {
         const updatedPositions = [...imagePositions];
         updatedPositions[index] = newPosition;
+        setImagePositions(updatedPositions);
+    };
+
+    // Remove an image from the sidebar and the designer area
+    const handleRemoveImage = (index) => {
+        const updatedImages = [...uploadedImages];
+        updatedImages.splice(index, 1); // Remove the image at the given index
+        setUploadedImages(updatedImages);
+
+        const updatedPositions = [...imagePositions];
+        updatedPositions.splice(index, 1); // Remove the position of the deleted image
         setImagePositions(updatedPositions);
     };
 
@@ -54,7 +63,7 @@ const TShirtDesigner = () => {
                 // Create FormData and append the image
                 const formData = new FormData();
                 formData.append('image', file);
-                formData.append('userId', USER_ID); 
+                formData.append('userId', USER_ID);
                 // Debug: Check that FormData contains the file
                 console.log('FormData:', formData);
 
@@ -93,6 +102,13 @@ const TShirtDesigner = () => {
                                 alt={`preview-${index}`}
                                 className="w-full h-24 object-contain border border-gray-200 rounded-md"
                             />
+                            {/* Remove button */}
+                            <button
+                                onClick={() => handleRemoveImage(index)}
+                                className="absolute top-0 right-0 p-1 text-red-500 bg-white rounded-full shadow-md"
+                            >
+                                <span className="text-lg">X</span>
+                            </button>
                         </div>
                     ))
                 ) : (
