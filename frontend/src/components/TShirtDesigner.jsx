@@ -3,10 +3,12 @@ import { Rnd } from 'react-rnd';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 import Tshirt from '../assets/tshirt.png';
+import BlackTshirt from '../assets/BlackTshirt.png';
 
 const TShirtDesigner = () => {
     const [uploadedImages, setUploadedImages] = useState([]);
     const [imagePositions, setImagePositions] = useState([]);
+    const [tShirtColor, setTShirtColor] = useState('white');
     const fileInputRef = useRef(null);
     const tShirtRef = useRef(null);
 
@@ -67,6 +69,10 @@ const TShirtDesigner = () => {
         });
     };
 
+    const handleTshirtColorChange = (e) => {
+        setTShirtColor(e.target.value);
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-7xl mx-auto">
@@ -111,9 +117,17 @@ const TShirtDesigner = () => {
                     {/* Main Design Area */}
                     <div className="flex-1 bg-white rounded-xl shadow-lg p-6">
                         <div className="flex justify-center mb-8">
-                            <div className="relative w-96 h-[32rem] bg-red-200" ref={tShirtRef}>
+                            <div className="relative w-96 h-[32rem] " ref={tShirtRef}>
+                                <select
+                                    className="px-4 py-2 border rounded-md"
+                                    value={tShirtColor}
+                                    onChange={handleTshirtColorChange}
+                                >
+                                    <option value="white">White T-Shirt</option>
+                                    <option value="black">Black T-Shirt</option>
+                                </select>
                                 <img
-                                    src={Tshirt}
+                                    src={tShirtColor === 'black' ? BlackTshirt : Tshirt}
                                     alt="T-shirt Template"
                                     className="w-full h-full object-contain"
                                 />
