@@ -6,7 +6,7 @@ export const getAllProductsWithUserInfo = async (req, res) => {
 		// Populating 'userId' field with 'name' and 'email' from User model
 		const products = await Product.find().populate(
 			"userId",  // This matches the field in your Product model
-			"name email"
+			"fullName email"
 		);
 		
 		// If no products found

@@ -33,6 +33,10 @@ const userShema = new mongoose.Schema(
             type: [String], // Array of strings
             required: false,
         },
+		isAdmin: {
+			type: Boolean,
+			default: false,
+		},
 		refreshToken: {
 			type: String,
 		},

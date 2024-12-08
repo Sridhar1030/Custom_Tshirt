@@ -2,35 +2,45 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
 
-const LoginPage = () => {
-    const [email, setEmail] = useState('');
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+const Register = () => {
+    const [formData, setFormData] = useState({
+        username: '',
+        fullName: '',
+        email: '',
+        password: '',
+    });
+
+    const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({
+            ...prevData,
+            [name]: value,
+        }));
+    };
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        setError('');
 
         try {
-            const loginData = {
-                email: email || undefined,
-                username: username || undefined,
-                password,
-            };
+            const response = await axios.post('http://localhost:5000/api/v1/auth/register', formData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
 
-            const response = await axios.post('http://localhost:5000/api/v1/auth/login', loginData, { withCredentials: true });
-
-            const { accessToken, user } = response.data;
-            localStorage.setItem('accessToken', accessToken);
-            localStorage.setItem('user', JSON.stringify(user));
-
+            setSuccess('Registration successful!');
+            setError(null);
+            localStorage.setItem('userID', response.data.user._id);
             navigate('/home');
-        } catch (error) {
-            setError(error.response ? error.response.data.message : 'Something went wrong!');
+        } catch (err) {
+            setError('Registration failed. Please try again.');
+            setSuccess(null);
         } finally {
             setLoading(false);
         }
@@ -41,12 +51,18 @@ const LoginPage = () => {
             <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg">
                 <div>
                     <h2 className="text-center text-3xl font-extrabold text-gray-900">
-                        Welcome Back
+                        Create Account
                     </h2>
                     <p className="mt-2 text-center text-sm text-gray-600">
-                        Please sign in to your account
+                        Join us today
                     </p>
                 </div>
+
+                {success && (
+                    <div className="bg-green-50 border-l-4 border-green-400 p-4 rounded">
+                        <p className="text-green-700 text-sm">{success}</p>
+                    </div>
+                )}
 
                 {error && (
                     <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded">
@@ -54,31 +70,47 @@ const LoginPage = () => {
                     </div>
                 )}
 
-                <form onSubmit={handleLogin} className="mt-8 space-y-6">
+                <form onSubmit={handleSubmit} className="mt-8 space-y-6">
                     <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700">
-                                Email
-                            </label>
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Enter your email"
-                            />
-                        </div>
-
                         <div>
                             <label className="block text-sm font-medium text-gray-700">
                                 Username
                             </label>
                             <input
                                 type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Enter your username"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Full Name
+                            </label>
+                            <input
+                                type="text"
+                                name="fullName"
+                                value={formData.fullName}
+                                onChange={handleChange}
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700">
+                                Email Address
+                            </label>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={handleChange}
+                                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                required
                             />
                         </div>
 
@@ -88,10 +120,11 @@ const LoginPage = () => {
                             </label>
                             <input
                                 type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
                                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                placeholder="Enter your password"
+                                required
                             />
                         </div>
                     </div>
@@ -108,21 +141,21 @@ const LoginPage = () => {
                                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                     </svg>
-                                    Logging In...
+                                    Creating Account...
                                 </span>
                             ) : (
-                                'Sign In'
+                                'Create Account'
                             )}
                         </button>
                     </div>
 
                     <div className="text-center">
-                        <p className="text-sm text-gray-600">Don't have an account?</p>
+                        <p className="text-sm text-gray-600">Already have an account?</p>
                         <Link
-                            to="/register"
+                            to="/"
                             className="mt-2 inline-block px-6 py-2 text-sm font-medium text-blue-600 hover:text-blue-500 focus:outline-none focus:underline transition-colors duration-200"
                         >
-                            Create an account
+                            Sign in
                         </Link>
                     </div>
                 </form>
@@ -131,4 +164,4 @@ const LoginPage = () => {
     );
 };
 
-export default LoginPage;
+export default Register;
