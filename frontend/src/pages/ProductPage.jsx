@@ -11,7 +11,7 @@ const ProductsPage = () => {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get(`${backendUrl}admin/products`);
+                const response = await axios.get(`${backendUrl}/admin/products`);
                 setProducts(response.data);
                 setLoading(false);
             } catch (err) {

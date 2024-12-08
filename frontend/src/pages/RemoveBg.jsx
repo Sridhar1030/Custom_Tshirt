@@ -18,7 +18,8 @@ const BgRemovalComponent = () => {
 
     const handleRemoveBg = async () => {
         if (!image) return;
-        const API_KEY = process.env.REACT_APP_REMOVE_BG_API_KEY;
+        const API_KEY =  import.meta.env.REACT_APP_REMOVE_BG_API_KEY;
+        console.log(API_KEY);
         setLoading(true);
         setError(null);
 

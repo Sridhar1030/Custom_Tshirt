@@ -60,7 +60,7 @@ const TShirtDesigner = () => {
                 formData.append('image', new File([blob], 'tshirt-design.png', { type: 'image/png' }));
                 formData.append('userId', USER_ID);
 
-                axios.post(`${backendUrl}upload`, formData, {
+                axios.post(`${backendUrl}/upload`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 })
                     .then(response => {
