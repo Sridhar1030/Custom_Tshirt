@@ -18,7 +18,7 @@ const BgRemovalComponent = () => {
 
     const handleRemoveBg = async () => {
         if (!image) return;
-
+        const API_KEY = process.env.REACT_APP_REMOVE_BG_API_KEY;
         setLoading(true);
         setError(null);
 
@@ -32,7 +32,7 @@ const BgRemovalComponent = () => {
                 formData,
                 {
                     headers: {
-                        "X-Api-Key": "XWaTj419uLtbAUQHc6bcsb2u",
+                        "X-Api-Key": API_KEY,
                     },
                     responseType: 'arraybuffer',
                 }
