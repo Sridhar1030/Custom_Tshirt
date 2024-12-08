@@ -5,12 +5,11 @@ import axios from 'axios';
 import Tshirt from '../assets/tshirt.png';
 
 const TShirtDesigner = () => {
-    const [uploadedImages, setUploadedImages] = useState([]); // Array of images
-    const [imagePositions, setImagePositions] = useState([]); // Store image positions
+    const [uploadedImages, setUploadedImages] = useState([]);
+    const [imagePositions, setImagePositions] = useState([]);
     const fileInputRef = useRef(null);
-    const tShirtRef = useRef(null); // Reference to the T-shirt design area
+    const tShirtRef = useRef(null);
 
-    // Handle multiple image uploads
     const handleImageUpload = (e) => {
         const files = Array.from(e.target.files);
         const newImages = files.map((file) => {
@@ -25,170 +24,164 @@ const TShirtDesigner = () => {
             setUploadedImages((prevImages) => [...prevImages, ...images]);
             setImagePositions((prevPositions) => [
                 ...prevPositions,
-                { x: 0, y: 0, width: 100, height: 100 }, // Default position and size
+                { x: 50, y: 50, width: 120, height: 120 }, // Better default position
             ]);
         });
     };
 
-    // Handle image position change using the Rnd component
     const handlePositionChange = (index, newPosition) => {
         const updatedPositions = [...imagePositions];
         updatedPositions[index] = newPosition;
         setImagePositions(updatedPositions);
     };
 
-    // Remove an image from the sidebar and the designer area
     const handleRemoveImage = (index) => {
-        const updatedImages = [...uploadedImages];
-        updatedImages.splice(index, 1); // Remove the image at the given index
-        setUploadedImages(updatedImages);
-
-        const updatedPositions = [...imagePositions];
-        updatedPositions.splice(index, 1); // Remove the position of the deleted image
-        setImagePositions(updatedPositions);
+        setUploadedImages(prev => prev.filter((_, i) => i !== index));
+        setImagePositions(prev => prev.filter((_, i) => i !== index));
     };
 
-    // Save the T-shirt design as an image and send it to the backend using Axios
     const handleSaveImage = () => {
         html2canvas(tShirtRef.current).then((canvas) => {
-            const imageBlob = canvas.toBlob((blob) => {
+            canvas.toBlob((blob) => {
                 if (!blob) {
                     console.error('Error: Image not generated');
                     return;
                 }
-                const USER_ID = localStorage.getItem('userID'); // Get userID from localStorage
 
-                const file = new File([blob], 'tshirt-design.png', { type: 'image/png' });
-
-                // Create FormData and append the image
+                const USER_ID = localStorage.getItem('userID');
                 const formData = new FormData();
-                formData.append('image', file);
+                formData.append('image', new File([blob], 'tshirt-design.png', { type: 'image/png' }));
                 formData.append('userId', USER_ID);
-                // Debug: Check that FormData contains the file
-                console.log('FormData:', formData);
 
-                // Check if the file is appended correctly
-                if (!formData.has('image')) {
-                    console.error('FormData does not contain the image file');
-                    return;
-                }
-
-                // Use Axios to upload the image
                 axios.post('http://localhost:5000/api/upload', formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data',
-                    },
+                    headers: { 'Content-Type': 'multipart/form-data' },
                 })
-                    .then((response) => {
-                        console.log('Image saved:', response.data);
+                    .then(response => {
+                        alert('Design saved successfully!');
                     })
-                    .catch((error) => {
-                        console.error('Error uploading image:', error);
+                    .catch(error => {
+                        alert('Error saving design. Please try again.');
+                        console.error('Error:', error);
                     });
             });
         });
     };
 
     return (
-        <div className="flex bg-gray-100 min-h-screen p-8">
-            {/* Sidebar for image previews */}
-            <div className="w-1/4 bg-white p-4 rounded-lg shadow-md">
-                <h2 className="text-lg font-bold mb-4 text-center">Uploaded Images</h2>
-                {uploadedImages.length > 0 ? (
-                    uploadedImages.map((image, index) => (
-                        <div key={index} className="relative mb-4">
-                            <img
-                                src={image}
-                                alt={`preview-${index}`}
-                                className="w-full h-24 object-contain border border-gray-200 rounded-md"
-                            />
-                            {/* Remove button */}
-                            <button
-                                onClick={() => handleRemoveImage(index)}
-                                className="absolute top-0 right-0 p-1 text-red-500 bg-white rounded-full shadow-md"
-                            >
-                                <span className="text-lg">X</span>
-                            </button>
-                        </div>
-                    ))
-                ) : (
-                    <p className="text-gray-500 text-center">No images uploaded</p>
-                )}
-            </div>
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
+                <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">
+                    Custom T-Shirt Designer
+                </h1>
 
-            {/* Main T-shirt designer area */}
-            <div className="flex-1 bg-white p-8 rounded-lg shadow-md ml-4">
-                <h1 className="text-xl font-bold mb-4 text-center">Design Your T-Shirt</h1>
-
-                <div className="flex justify-center">
-                    <div className="relative w-72 h-96" ref={tShirtRef}>
-                        {/* White T-shirt Image */}
-                        <img
-                            src={Tshirt}
-                            alt="T-shirt"
-                            className="w-full h-full object-contain"
-                        />
-
-                        {/* Image placement area (only chest area of the T-shirt) */}
-                        <div className="absolute top-16 left-8 w-56 h-72 overflow-hidden">
-                            {uploadedImages.map((image, index) => (
-                                <Rnd
-                                    key={index}
-                                    position={{ x: imagePositions[index].x, y: imagePositions[index].y }}
-                                    size={{
-                                        width: imagePositions[index].width,
-                                        height: imagePositions[index].height,
-                                    }}
-                                    onDragStop={(e, d) => {
-                                        handlePositionChange(index, { ...imagePositions[index], x: d.x, y: d.y });
-                                    }}
-                                    onResizeStop={(e, direction, ref, delta, position) => {
-                                        handlePositionChange(index, {
-                                            x: position.x,
-                                            y: position.y,
-                                            width: ref.offsetWidth,
-                                            height: ref.offsetHeight,
-                                        });
-                                    }}
-                                    bounds="parent"
-                                    minWidth={50}
-                                    minHeight={50}
-                                    maxWidth={200}
-                                    maxHeight={200}
-                                    lockAspectRatio={true}
-                                >
-                                    <img
-                                        src={image}
-                                        alt={`design-${index}`}
-                                        className="w-full h-full object-contain"
-                                    />
-                                </Rnd>
-                            ))}
+                <div className="flex flex-col lg:flex-row gap-8">
+                    {/* Sidebar */}
+                    <div className="lg:w-72 bg-white rounded-xl shadow-lg p-6">
+                        <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                            Uploaded Designs
+                        </h2>
+                        <div className="space-y-4">
+                            {uploadedImages.length > 0 ? (
+                                uploadedImages.map((image, index) => (
+                                    <div
+                                        key={index}
+                                        className="relative group bg-gray-50 rounded-lg p-2 transition-all duration-200 hover:shadow-md"
+                                    >
+                                        <img
+                                            src={image}
+                                            alt={`Design ${index + 1}`}
+                                            className="w-full h-32 object-contain rounded-md "
+                                        />
+                                        <button
+                                            onClick={() => handleRemoveImage(index)}
+                                            className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center hover:bg-red-600"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))
+                            ) : (
+                                <div className="text-center py-8 text-gray-500">
+                                    No designs uploaded yet
+                                </div>
+                            )}
                         </div>
                     </div>
+
+                    {/* Main Design Area */}
+                    <div className="flex-1 bg-white rounded-xl shadow-lg p-6">
+                        <div className="flex justify-center mb-8">
+                            <div className="relative w-96 h-[32rem] bg-red-200" ref={tShirtRef}>
+                                <img
+                                    src={Tshirt}
+                                    alt="T-shirt Template"
+                                    className="w-full h-full object-contain"
+                                />
+                                <div className="absolute top-24 left-20 w-56 h-64 overflow-hidden">
+                                    {uploadedImages.map((image, index) => (
+                                        <Rnd
+                                            key={index}
+                                            position={{ x: imagePositions[index].x, y: imagePositions[index].y }}
+                                            size={{
+                                                width: imagePositions[index].width,
+                                                height: imagePositions[index].height,
+                                            }}
+                                            onDragStop={(e, d) => {
+                                                handlePositionChange(index, { ...imagePositions[index], x: d.x, y: d.y });
+                                            }}
+                                            onResizeStop={(e, direction, ref, delta, position) => {
+                                                handlePositionChange(index, {
+                                                    x: position.x,
+                                                    y: position.y,
+                                                    width: ref.offsetWidth,
+                                                    height: ref.offsetHeight,
+                                                });
+                                            }}
+                                            bounds="parent"
+                                            minWidth={40}
+                                            minHeight={40}
+                                            maxWidth={180}
+                                            maxHeight={180}
+                                            lockAspectRatio={true}
+                                        >
+                                            <img
+                                                src={image}
+                                                alt={`Design ${index + 1}`}
+                                                className="w-full h-full object-contain cursor-move"
+                                            />
+                                        </Rnd>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="flex justify-center gap-4">
+                            <button
+                                onClick={() => fileInputRef.current.click()}
+                                className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 
+                                        transition-colors duration-200 focus:ring-2 focus:ring-blue-300"
+                            >
+                                Upload Design
+                            </button>
+                            <button
+                                onClick={handleSaveImage}
+                                className="px-6 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 
+                                        transition-colors duration-200 focus:ring-2 focus:ring-green-300"
+                            >
+                                Save Design
+                            </button>
+                        </div>
+
+                        <input
+                            type="file"
+                            className="hidden"
+                            ref={fileInputRef}
+                            multiple
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                        />
+                    </div>
                 </div>
-
-                <input
-                    type="file"
-                    className="hidden"
-                    ref={fileInputRef}
-                    multiple
-                    onChange={handleImageUpload}
-                />
-
-                <button
-                    onClick={() => fileInputRef.current.click()}
-                    className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-                >
-                    Upload Image
-                </button>
-
-                <button
-                    onClick={handleSaveImage}
-                    className="mt-4 ml-4 px-4 py-2 bg-green-500 text-white rounded"
-                >
-                    Save Image
-                </button>
             </div>
         </div>
     );
