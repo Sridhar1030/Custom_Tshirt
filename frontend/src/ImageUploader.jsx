@@ -11,6 +11,9 @@ const ImageUploader = () => {
         }
     };
 
+    const backendUrl = import.meta.env.VITE_BACKEND_URL; // Access the environment variable
+
+
     const handleUpload = async () => {
         if (!selectedFile) {
             alert('Please select a file first.');
@@ -19,7 +22,7 @@ const ImageUploader = () => {
 
         try {
             // 1️⃣ Get Pre-signed URL from Backend
-            const response = await fetch('http://localhost:5000/api/generate-presigned-url', {
+            const response = await fetch(`${backendUrl}generate-presigned-url`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ fileName: selectedFile.name, fileType: selectedFile.type })
@@ -41,7 +44,7 @@ const ImageUploader = () => {
 
             // 3️⃣ Save the File URL in Backend Database
             const s3ImageUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
-            await fetch('http://localhost:5000/api/save-image-url', {
+            await fetch(`${backendUrl}/api/save-image-url`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ imageUrl: s3ImageUrl })

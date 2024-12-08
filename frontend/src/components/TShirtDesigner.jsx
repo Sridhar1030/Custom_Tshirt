@@ -13,6 +13,10 @@ const TShirtDesigner = () => {
     const fileInputRef = useRef(null);
     const tShirtRef = useRef(null);
 
+    const backendUrl = import.meta.env.VITE_BACKEND_URL; // Access the environment variable
+
+
+
     const handleImageUpload = (e) => {
         const files = Array.from(e.target.files);
         const newImages = files.map((file) => {
@@ -56,7 +60,7 @@ const TShirtDesigner = () => {
                 formData.append('image', new File([blob], 'tshirt-design.png', { type: 'image/png' }));
                 formData.append('userId', USER_ID);
 
-                axios.post('http://localhost:5000/api/upload', formData, {
+                axios.post(`${backendUrl}upload`, formData, {
                     headers: { 'Content-Type': 'multipart/form-data' },
                 })
                     .then(response => {

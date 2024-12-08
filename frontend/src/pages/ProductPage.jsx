@@ -6,11 +6,12 @@ const ProductsPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const backendUrl = import.meta.env.VITE_BACKEND_URL; // Access the environment variable
 
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/admin/products');
+                const response = await axios.get(`${backendUrl}admin/products`);
                 setProducts(response.data);
                 setLoading(false);
             } catch (err) {

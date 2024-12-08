@@ -22,13 +22,15 @@ const Register = () => {
             [name]: value,
         }));
     };
+    const backendUrl = import.meta.env.VITE_BACKEND_URL; // Access the environment variable
 
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:5000/api/v1/auth/register', formData, {
+            const response = await axios.post(`${backendUrl}v1/auth/register`, formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

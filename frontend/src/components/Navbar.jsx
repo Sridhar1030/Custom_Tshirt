@@ -8,7 +8,9 @@ const Navbar = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const backendUrl = import.meta.env.VITE_BACKEND_URL; // Access the environment variable
 
+    
     const handleLogout = () => {
         localStorage.clear();
         navigate('/');
@@ -23,7 +25,7 @@ const Navbar = () => {
                     return;
                 }
 
-                const response = await axios.get(`http://localhost:5000/api/v1/auth/user/${userId}`);
+                const response = await axios.get(`${backendUrl}v1/auth/user/${userId}`);
                 setUserInfo(response.data);
             } catch (err) {
                 setError('Failed to fetch user info');

@@ -9,6 +9,7 @@ const LoginPage = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const backendUrl = import.meta.env.VITE_BACKEND_URL; // Access the environment variable
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -22,7 +23,7 @@ const LoginPage = () => {
                 password,
             };
 
-            const response = await axios.post('http://localhost:5000/api/v1/auth/login', loginData, { withCredentials: true });
+            const response = await axios.post(`${backendUrl}v1/auth/login`, loginData, { withCredentials: true });
 
             const { accessToken, user } = response.data;
             localStorage.setItem('accessToken', accessToken);
