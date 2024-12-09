@@ -23,7 +23,7 @@ const LoginPage = () => {
                 password,
             };
 
-            const response = await axios.post(`${backendUrl}v1/auth/login`, loginData, { withCredentials: true });
+            const response = await axios.post(`${backendUrl}/v1/auth/login`, loginData, { withCredentials: true });
 
             const { accessToken, user } = response.data;
             localStorage.setItem('accessToken', accessToken);

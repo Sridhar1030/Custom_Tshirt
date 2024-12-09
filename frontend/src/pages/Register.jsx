@@ -30,7 +30,7 @@ const Register = () => {
         setLoading(true);
 
         try {
-            const response = await axios.post(`${backendUrl}v1/auth/register`, formData, {
+            const response = await axios.post(`${backendUrl}/v1/auth/register`, formData, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

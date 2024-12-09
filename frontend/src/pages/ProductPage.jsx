@@ -6,7 +6,8 @@ const ProductsPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const backendUrl = import.meta.env.VITE_BACKEND_URL; // Access the environment variable
+    const [loadingMessages, setLoadingMessages] = useState([]);
+    const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -15,12 +16,51 @@ const ProductsPage = () => {
                 setProducts(response.data);
                 setLoading(false);
             } catch (err) {
-                setError(err.message || 'Failed to fetch products');
+                setError('Network Error');
                 setLoading(false);
             }
         };
 
-        fetchProducts();
+        // Simulate loading messages
+        const messages = [
+            'Getting info...',
+            'Preparing data...',
+            'Fetching products...',
+            'Rendering UI...',
+            'Loading content...',
+            'Almost there...',
+            'Initializing...',
+            'Finalizing setup...'
+        ];
+
+        let messageIndex = 0;
+        const intervalId = setInterval(() => {
+            setLoadingMessages((prevMessages) => [
+                ...prevMessages,
+                messages[messageIndex]
+            ]);
+            messageIndex += 1;
+            if (messageIndex >= messages.length) {
+                clearInterval(intervalId);
+            }
+        }, 1500); // Display a new message every 1.5 seconds
+
+        // Fetch products after 5 seconds delay to simulate loading
+        const fetchTimeout = setTimeout(() => {
+            fetchProducts();
+        }, 5000);
+
+        // After 5 minutes, show error and "Try Again" button
+        const errorTimeout = setTimeout(() => {
+            setError('Network Error');
+            setLoading(false);
+        }, 300000); // 5 minutes = 300,000 milliseconds
+
+        return () => {
+            clearInterval(intervalId);
+            clearTimeout(fetchTimeout);
+            clearTimeout(errorTimeout);
+        };
     }, []);
 
     if (loading) {
@@ -30,31 +70,19 @@ const ProductsPage = () => {
                     <Loader2 className="w-12 h-12 text-blue-500 animate-spin mx-auto" />
                     <p className="mt-4 text-gray-600 font-medium">Loading products...</p>
                     <p className="text-sm text-gray-400 mt-2">Please wait while we fetch the data</p>
+                    {/* Display random messages every 1.5 seconds */}
+                    {loadingMessages.length > 0 && (
+                        <div className="mt-4">
+                            {loadingMessages.map((message, index) => (
+                                <p key={index} className="text-gray-500">{message}</p>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         );
     }
 
-    if (error) {
-        return (
-            <div className="flex h-screen items-center justify-center bg-gray-50">
-                <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full mx-4">
-                    <div className="flex items-center justify-center mb-4">
-                        <AlertCircle className="w-12 h-12 text-red-500" />
-                    </div>
-                    <h2 className="text-red-600 text-2xl font-semibold mb-2 text-center">Error Occurred</h2>
-                    <p className="text-gray-600 mb-6 text-center">{error}</p>
-                    <button
-                        onClick={() => window.location.reload()}
-                        className="w-full px-4 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center justify-center gap-2 font-medium"
-                    >
-                        <RefreshCcw className="w-5 h-5" />
-                        Try Again
-                    </button>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">

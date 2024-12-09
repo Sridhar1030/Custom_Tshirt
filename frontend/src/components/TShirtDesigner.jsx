@@ -3,7 +3,7 @@ import { Rnd } from 'react-rnd';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 import { Upload, Save, Trash2, Image, PaintBucket } from 'lucide-react';
-import Tshirt from '../assets/tshirt.png';
+import Tshirt from '../assets/Tshirt.png';
 import BlackTshirt from '../assets/BlackTshirt.png';
 
 const TShirtDesigner = () => {
