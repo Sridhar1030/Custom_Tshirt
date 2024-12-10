@@ -23,11 +23,11 @@ const LoginPage = () => {
                 password,
             };
 
-            const response = await axios.post(`${backendUrl}/v1/auth/login`, loginData, { withCredentials: true });
+            const response = await axios.post(`${backendUrl}/v1/auth/login`, loginData);
 
             const { accessToken, user } = response.data;
-            localStorage.setItem('accessToken', accessToken);
-            localStorage.setItem('user', JSON.stringify(user));
+            console.log(response.data);
+            localStorage.setItem('userID', JSON.stringify(user._id));
 
             navigate('/home');
         } catch (error) {
