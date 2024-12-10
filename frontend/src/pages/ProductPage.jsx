@@ -121,7 +121,7 @@ const ProductsPage = () => {
                                     <div className="flex items-center gap-2 mb-2">
                                         <User className="w-4 h-4 text-gray-400" />
                                         <h2 className="text-xl font-semibold truncate text-gray-800">
-                                            {product.userId.fullName}
+                                            {product?.userId?.fullName}
                                         </h2>
                                     </div>
                                     <div className="flex items-center gap-2 text-gray-600 text-sm mb-3">

@@ -27,7 +27,7 @@ const LoginPage = () => {
 
             const { accessToken, user } = response.data;
             console.log(response.data);
-            localStorage.setItem('userID', JSON.stringify(user._id));
+            localStorage.setItem('userID', response.data.user._id);
 
             navigate('/home');
         } catch (error) {
