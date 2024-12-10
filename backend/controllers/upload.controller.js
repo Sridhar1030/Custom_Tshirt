@@ -3,7 +3,7 @@ import { User } from "../models/user.model.js";
 import { Product } from "../models/product.models.js";
 import dotenv from "dotenv";
 dotenv.config();
-// Initialize AWS S3 Client (v3)
+
 const s3 = new S3Client({
 	region: process.env.AWS_REGION,
 	credentials: {
@@ -49,7 +49,6 @@ export const uploadImage = async (req, res) => {
 		const { buffer, originalname, mimetype } = req.file;
 		const fileName = `${Date.now()}_${originalname}`;
 
-		// Upload to S3 directly from memory
 		const uploadResponse = await uploadToS3(buffer, fileName, mimetype);
 		const fileUrl = `https://${process.env.S3_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${fileName}`;
 
@@ -58,11 +57,9 @@ export const uploadImage = async (req, res) => {
 			return res.status(404).send("User not found");
 		}
 
-		// Add file URL to user's T-shirt array and save
 		user.tshirt.push(fileUrl);
 		await user.save();
 
-		// Adding new product
 		const newProduct = new Product({
 			image: fileUrl,
 			userId: userId,

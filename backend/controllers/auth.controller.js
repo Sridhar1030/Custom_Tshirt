@@ -5,11 +5,9 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
 	try {
 		const user = await User.findById(userId);
 
-		// Generate access token and refresh token
 		const accessToken = user.generateAccessToken();
 		const refreshToken = user.generateRefreshToken();
 
-		// Save the refresh token in the database
 		user.refreshToken = refreshToken;
 		await user.save({ validateBeforeSave: false });
 
@@ -25,7 +23,6 @@ const generateAccessTokenAndRefreshToken = async (userId) => {
 const registerUser = asyncHandler(async (req, res) => {
 	const { fullName, email, password, username } = req.body;
 
-	// Check if all fields are provided
 	if (
 		!fullName?.trim() ||
 		!email?.trim() ||
@@ -36,7 +33,6 @@ const registerUser = asyncHandler(async (req, res) => {
 		throw new Error("All fields are required");
 	}
 
-	// Check if user already exists
 	const userExists = await User.findOne({ $or: [{ email }, { username }] });
 
 	if (userExists) {
@@ -44,7 +40,6 @@ const registerUser = asyncHandler(async (req, res) => {
 		throw new Error("User already exists");
 	}
 
-	// Create the new user
 	const user = await User.create({ fullName, email, password, username });
 
 	if (!user) {
@@ -52,7 +47,6 @@ const registerUser = asyncHandler(async (req, res) => {
 		throw new Error("Invalid user data");
 	}
 
-	// Remove sensitive fields before sending response
 	const userData = user.toObject();
 	delete userData.password;
 	delete userData.refreshToken;
@@ -150,8 +144,7 @@ const logoutUser = asyncHandler(async (req, res) => {
 
 export const getUserInfo = async (req, res) => {
 	try {
-		const { userId } = req.params; // Extract userId from URL params
-
+		const { userId } = req.params; 
 		// Find user by userId
 		const user = await User.findById(userId);
 
@@ -159,12 +152,10 @@ export const getUserInfo = async (req, res) => {
 			return res.status(404).json({ message: "User not found" });
 		}
 
-		// Remove sensitive information like password and refresh token
 		const userData = user.toObject();
 		delete userData.password;
 		delete userData.refreshToken;
 
-		// Return the user info (excluding sensitive data)
 		res.status(200).json(userData);
 	} catch (error) {
 		console.error("Error fetching user info:", error);
