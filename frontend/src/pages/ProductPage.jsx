@@ -6,7 +6,7 @@ const ProductsPage = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [loadingMessages, setLoadingMessages] = useState([]);
+    const [currentLoadingMessage, setCurrentLoadingMessage] = useState('');
     const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
     useEffect(() => {
@@ -21,7 +21,6 @@ const ProductsPage = () => {
             }
         };
 
-        // Simulate loading messages
         const messages = [
             'Getting info...',
             'Preparing data...',
@@ -30,20 +29,26 @@ const ProductsPage = () => {
             'Loading content...',
             'Almost there...',
             'Initializing...',
-            'Finalizing setup...'
+            'Finalizing setup...',
+            'Rendering still getting started...',
+            'Optimizing user experience...',
+            'Setting up visuals...',
+            'Cleaning up pixels...',
+            'Double-checking everything...',
+            'Adjusting components...',
+            'Making it pixel perfect...',
+            'Finalizing layout...'
         ];
 
-        let messageIndex = 0;
-        const intervalId = setInterval(() => {
-            setLoadingMessages((prevMessages) => [
-                ...prevMessages,
-                messages[messageIndex]
-            ]);
-            messageIndex += 1;
-            if (messageIndex >= messages.length) {
-                clearInterval(intervalId);
-            }
-        }, 1500); // Display a new message every 1.5 seconds
+        const updateRandomMessage = () => {
+            const randomIndex = Math.floor(Math.random() * messages.length);
+            setCurrentLoadingMessage(messages[randomIndex]);
+        };
+
+        // Update random message at random intervals between 1 and 3 seconds
+        const messageIntervalId = setInterval(() => {
+            updateRandomMessage();
+        }, Math.floor(Math.random() * (3000 - 1000 + 1)) + 1000); // Random interval between 1-3 seconds
 
         // Fetch products after 5 seconds delay to simulate loading
         const fetchTimeout = setTimeout(() => {
@@ -57,7 +62,7 @@ const ProductsPage = () => {
         }, 300000); // 5 minutes = 300,000 milliseconds
 
         return () => {
-            clearInterval(intervalId);
+            clearInterval(messageIntervalId);
             clearTimeout(fetchTimeout);
             clearTimeout(errorTimeout);
         };
@@ -70,19 +75,15 @@ const ProductsPage = () => {
                     <Loader2 className="w-12 h-12 text-blue-500 animate-spin mx-auto" />
                     <p className="mt-4 text-gray-600 font-medium">Loading products...</p>
                     <p className="text-sm text-gray-400 mt-2">Please wait while we fetch the data</p>
-                    {/* Display random messages every 1.5 seconds */}
-                    {loadingMessages.length > 0 && (
+                    {currentLoadingMessage && (
                         <div className="mt-4">
-                            {loadingMessages.map((message, index) => (
-                                <p key={index} className="text-gray-500">{message}</p>
-                            ))}
+                            <p className="text-gray-500">{currentLoadingMessage}</p>
                         </div>
                     )}
                 </div>
             </div>
         );
     }
-
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-12">

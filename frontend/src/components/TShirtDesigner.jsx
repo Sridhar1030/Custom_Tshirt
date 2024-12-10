@@ -13,8 +13,7 @@ const TShirtDesigner = () => {
     const fileInputRef = useRef(null);
     const tShirtRef = useRef(null);
 
-    const backendUrl = import.meta.env.VITE_BACKEND_URL; // Access the environment variable
-
+    const backendUrl = import.meta.env.VITE_BACKEND_URL; 
 
 
     const handleImageUpload = (e) => {

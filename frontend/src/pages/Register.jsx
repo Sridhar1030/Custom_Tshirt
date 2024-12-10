@@ -22,8 +22,7 @@ const Register = () => {
             [name]: value,
         }));
     };
-    const backendUrl = import.meta.env.VITE_BACKEND_URL; // Access the environment variable
-
+    const backendUrl = import.meta.env.VITE_BACKEND_URL; 
     
     const handleSubmit = async (e) => {
         e.preventDefault();
